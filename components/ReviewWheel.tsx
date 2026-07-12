@@ -55,7 +55,7 @@ export default function ReviewWheel() {
       onWheel={onWheel}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
-      className="select-none"
+      className="select-none overflow-hidden"
     >
       <div className="relative h-[360px] flex items-center justify-center">
         {REVIEWS.map((r, i) => {
