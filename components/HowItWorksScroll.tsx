@@ -11,6 +11,12 @@ const STEPS = [
 export default function HowItWorksScroll() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
+  const lastChangeRef = useRef(0);
+  const pendingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingTargetRef = useRef<number | null>(null);
+  const MIN_STEP_DELAY = 200; // ms — each step stays visible at least this long
+
   // Captured once on mount rather than tracked live — mobile browsers fire
   // resize events as the address bar collapses/expands during scroll, and
   // reacting to those would make the pinned section's own height shift
@@ -22,6 +28,13 @@ export default function HowItWorksScroll() {
     setVh(window.innerHeight);
   }, []);
 
+  function commitStep(target: number) {
+    if (target === activeRef.current) return;
+    activeRef.current = target;
+    lastChangeRef.current = performance.now();
+    setActive(target);
+  }
+
   useEffect(() => {
     function onScroll() {
       const el = sectionRef.current;
@@ -30,11 +43,34 @@ export default function HowItWorksScroll() {
       const total = rect.height - vh;
       if (total <= 0) return;
       const progress = Math.min(Math.max(-rect.top / total, 0), 0.999);
-      setActive(Math.floor(progress * STEPS.length));
+      const target = Math.floor(progress * STEPS.length);
+
+      if (target === activeRef.current) return;
+
+      const elapsed = performance.now() - lastChangeRef.current;
+      if (elapsed >= MIN_STEP_DELAY) {
+        commitStep(target);
+      } else {
+        // Remember the freshest target, but don't visually jump to it
+        // until the current step has had its minimum time on screen.
+        pendingTargetRef.current = target;
+        if (!pendingTimeoutRef.current) {
+          pendingTimeoutRef.current = setTimeout(() => {
+            pendingTimeoutRef.current = null;
+            if (pendingTargetRef.current !== null) {
+              commitStep(pendingTargetRef.current);
+              pendingTargetRef.current = null;
+            }
+          }, MIN_STEP_DELAY - elapsed);
+        }
+      }
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (pendingTimeoutRef.current) clearTimeout(pendingTimeoutRef.current);
+    };
   }, [vh]);
 
   return (
