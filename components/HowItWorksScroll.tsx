@@ -11,13 +11,23 @@ const STEPS = [
 export default function HowItWorksScroll() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  // Captured once on mount rather than tracked live — mobile browsers fire
+  // resize events as the address bar collapses/expands during scroll, and
+  // reacting to those would make the pinned section's own height shift
+  // under the user mid-scroll. Using one fixed value keeps the CSS height
+  // and the JS scroll math always in agreement.
+  const [vh, setVh] = useState(800);
+
+  useEffect(() => {
+    setVh(window.innerHeight);
+  }, []);
 
   useEffect(() => {
     function onScroll() {
       const el = sectionRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      const total = rect.height - window.innerHeight;
+      const total = rect.height - vh;
       if (total <= 0) return;
       const progress = Math.min(Math.max(-rect.top / total, 0), 0.999);
       setActive(Math.floor(progress * STEPS.length));
@@ -25,11 +35,16 @@ export default function HowItWorksScroll() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [vh]);
 
   return (
-    <section ref={sectionRef} id="how" className="grain relative bg-darkcard" style={{ height: `${STEPS.length * 100}dvh` }}>
-      <div className="sticky top-0 h-[100dvh] overflow-hidden flex items-center">
+    <section
+      ref={sectionRef}
+      id="how"
+      className="grain relative bg-darkcard"
+      style={{ height: `${STEPS.length * vh}px` }}
+    >
+      <div className="sticky top-0 overflow-hidden flex items-center" style={{ height: `${vh}px` }}>
         <div className="max-w-[1180px] mx-auto px-6 w-full grid md:grid-cols-[minmax(160px,240px)_1fr] gap-10 md:gap-16 items-center">
           <div>
             <div
