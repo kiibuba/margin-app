@@ -28,8 +28,8 @@ export default function HowItWorksScroll() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="how" className="grain relative bg-darkcard" style={{ height: `${STEPS.length * 100}vh` }}>
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center">
+    <section ref={sectionRef} id="how" className="grain relative bg-darkcard" style={{ height: `${STEPS.length * 100}dvh` }}>
+      <div className="sticky top-0 h-[100dvh] overflow-hidden flex items-center">
         <div className="max-w-[1180px] mx-auto px-6 w-full grid md:grid-cols-[minmax(160px,240px)_1fr] gap-10 md:gap-16 items-center">
           <div>
             <div

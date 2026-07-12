@@ -6,7 +6,7 @@ export default function LoginPage() {
   return (
     <main>
       <Nav />
-      <div className="bg-darkbg min-h-screen pt-[73px] flex items-center justify-center px-6 py-16">
+      <div className="bg-darkbg min-h-[100dvh] pt-[73px] flex items-center justify-center px-6 py-16">
         <Suspense fallback={null}>
           <LoginForm />
         </Suspense>
