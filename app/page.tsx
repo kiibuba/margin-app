@@ -197,15 +197,14 @@ export default function Home() {
       </section>
 
       {/* SAMPLE TAKES — dark, interactive wheel — now sits right before the footer */}
-      <section className="grain bg-darkbg py-20 relative">
+      <section className="grain bg-darkbg py-20 relative overflow-hidden">
         <div className="max-w-[1180px] mx-auto px-6">
           <h2 className="font-serif font-bold text-cream text-[32px] md:text-[42px] tracking-tight mb-3.5">
             What a take actually looks like
           </h2>
-          <p className="text-mutedlight text-[17px] max-w-[540px] mb-4 leading-relaxed">
+          <p className="text-mutedlight text-[17px] max-w-[540px] mb-10 leading-relaxed">
             No advice, no ten-step plan. Just what we saw, and what we thought of it.
           </p>
-          <p className="font-mono text-xs text-muted2 mb-10">click a card, use the arrows, or scroll</p>
           <ReviewWheel />
         </div>
       </section>
